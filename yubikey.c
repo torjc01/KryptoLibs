@@ -3,39 +3,48 @@
 #include <string.h>
 #include "yubikey.h"
 
+#define CODE_SIZE   45
+#define ID_SIZE     13
+#define OTP_SIZE    33
+#define BIN_SIZE    129
+
 int main(){
-    char yubikey_code[45];
-    char yubikey_id[13];
-    char otp[33]; 
+    char yubikey_code[CODE_SIZE];
+    char yubikey_id[ID_SIZE];
+    char otp[OTP_SIZE]; 
     int i, j; 
 
     printf("Touchez votre yubikey: ");
     scanf("%s", yubikey_code);
 
-    for (i = 0; i < 12; i++){
+    for (i = 0; i < ID_SIZE-1; i++){
         yubikey_id[i] = yubikey_code[i]; 
     }
 
     yubikey_id[i] = '\0';
 
-    for(i=12, j=0; i < 44; i++, j++){
+    for(i=ID_SIZE-1, j=0; i < CODE_SIZE-1; i++, j++){
         otp[j] = yubikey_code[i];
     }
 
     otp[j] = '\0';
 
-    char *hex = modhexToHex(otp, 33); 
+    char *hex = modhexToHex(otp, OTP_SIZE); 
     char *bin = hexToBin(hex);
 
     printf("Yubikey code: %s\n", yubikey_code);
     printf("Yubikey ID: %s\n", yubikey_id);
     printf("Yubikey OTP: %s\n", otp);
-    printf("Yubikey hexadecimal: %s\n", hex);
-    printf("Yubikey binaire: %s\n", bin);
+    printf("Yubikey OTP hexadecimal: %s\n", hex);
+    printf("Yubikey OTP binaire: %s\n", bin);
 
     return 0;
 }
 
+/*
+* Convertion de modHexadecimal a hexadecimal. 
+*
+*/
 char * modhexToHex(char *s, int len){
     char *hex = malloc(len * sizeof(char)); 
     int i, j, k;
@@ -60,8 +69,11 @@ char * modhexToHex(char *s, int len){
     return hex;
 }
 
+/*
+*  Convertion hexa-binaire simplifiée.
+**/
 char * hexToBin(char *s){
-    static char bin[129]; 
+    static char bin[BIN_SIZE]; 
     int i = 0;
 
     while(s[i]){
